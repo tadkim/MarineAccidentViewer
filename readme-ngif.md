@@ -4,8 +4,30 @@
 
 
 
-  
+## Intro
+---
+__Angular는 우리가 DOM 구조(structure)를 조작할 수 있도록 도와주는 강력한 Template Engine을 가지고 있다.__ 
+<br/>
+단일페이지 애플리케이션(Single Page Application)을 이루는 기능 중 하나가 바로 __DOM을 조작(Manipulation)하는 기능__이다.
+<br/>
+사용자가 애플리케이션을 탐색할 때 마다 새로운 페이지를 매번 제공하는 형태가 아니라 DOM의 섹션을 기준으로 표시하고, 애플리케이션의 상태에 따라 보이거나 사라지는 구조로 만드는 것을 추구한다. 
+<br/>
+이 장에서는 Angular로 어떻게 DOM을 조작하고 다루는지, 그리고 어떻게 이러한 작업들을 우리가 직접 directives를 만들고, 다루면서 해나갈 수 있을지에 대해서 정리해보고자 한다.
 
+
+
+<br/><br/>
+
+__기본적으로 이 챕터에는 다음과 같은 내용들이 포함되어있다.__ 
+- [learn what structural directives are](https://angular.io/docs/ts/latest/guide/structural-directives.html#definition)
+- [study ngIf](https://angular.io/docs/ts/latest/guide/structural-directives.html#ngIf)
+- [discover the <template> element](https://angular.io/docs/ts/latest/guide/structural-directives.html#template)
+- [understand the asterisk (*) in *ngFor](https://angular.io/docs/ts/latest/guide/structural-directives.html#asterisk)
+- [write our own structural directive](https://angular.io/docs/ts/latest/guide/structural-directives.html#unless)
+
+
+  
+<br><br><br>
 
 ## NgIf Case Study
 ---
@@ -29,7 +51,7 @@
 
   
 
-
+<br><br><br>
 
 ### 왜 "숨기는" 대신 "지우는" 것일까?
 ---
@@ -37,6 +59,7 @@ __angular__팀에서는, 특정 단락을 그것의 `display` property를 `none`
 
 우리가 숨겨놓는다해도 우리 눈에만 보이지 않을 뿐, 해당 요소는 여전히 보이지않은채로 DOM에 남아있다. 여기에 한가지 더 말해두자면, 정확히는 우리는 여기서 `remove`하지 않고 `ngIf`한다.
 
+<br><br><br>
 
 ### 차이는 매우 중요하게 작용한다.
 우리가 요소하나를 숨길 때에도, Components는 계속해서 동작하고 있다. 이것은 여전히 남아 이것과 DOM요소에 연결된 그 상태를 유지한다. 또한, 이런 상태로 존재하면 event를 계속 수신하고있는 것이다.  
@@ -45,8 +68,14 @@ Angular는 끊임없이 databinding에 영향을 줄 수 있는 변화를 체크
 
 비록 보이지는 않지만, Component와 Component의 하위요소들은 더 유용하게 사용할 수 있는 resource들을 묶어버리고있는 셈이다. 사용자에게는 전혀 도움이 되지않는 일들을 하며 성능 및 메모리에 부담을 줄 수 있는 것이다.
 
+<br><br><br>
+
 ### 긍정적인 측면에 대하여
 element를 다시 보여주는 것을 굉장히 빠르게 처리할 수 있다. Component의 변경 이전 상태로 되돌리고, 표시할 준비가 되어있다. 이 과정을 진행하는 동안 Component가 다시 초기화 되는 것이 아니다.(다시 초기화하는 것은 너무 부담스러운 작업이다.)
+
+
+<br><br><br>
+
 
 ### ngIf는 다르다
 말 그대로 `ngIf`는 조금 다르다. 
@@ -56,8 +85,17 @@ element를 다시 보여주는 것을 굉장히 빠르게 처리할 수 있다. 
 
 이를 통해 Component는 가비지컬렉션(garbage-collection)을 할 수 있고, 이상적인 방향인 "최대 사용가능한 메모리 확보"로 향할 수 있게된다.
 
+
+<br><br><br>
+
+
 ### Component가 계층구조를 가지고 있을 때의 `ngIf`
 많은 경우 Component는 child component를 가지고 있고, 그 child component가 또 child component를 가지고있는 경우도 많다. 이러한 상황에서의 `ngIf`를 생각해보자.
+
+
+<br><br><br>
+
+
 
 __`ngIf`가 common ancestor를 파괴할 때 그것들 모두가 파괴된다.__
 > common : 공통, ancestor : 조상  
@@ -69,6 +107,10 @@ __`ngIf`가 common ancestor를 파괴할 때 그것들 모두가 파괴된다.__
 ~~초기화 노력을 최소화하고 companion service의 상태를 캐싱하는 것을 고려한다.~~
 <br/>
 
+
+<br><br><br>
+
+
 ### 결국 뭐가 좋다는건데? - ngIf
 "각각의 방법(숨기기와 제거하기)에는 장단점이 있다"라는 것에대해서 나름 세부적으로 살펴봤다. 여기서 angular는 일반적으로 원치않는 Component에 대해서, 단순히 "숨기는(hide)"것 보다는 __`ngIf`를 사용하여 "제거(remove)"하는 것을 권장__하고있다.
 
@@ -77,6 +119,10 @@ These same considerations apply to every structural directive, whether built-in 
 
 ~~이러한 고려사항으로, 모든 structural directives를 내장(built-in)으로 할지, 사용자정의(Custom) 방식으로 할 지에 대해 적용한다.~~  
 ```
+
+<br><br><br>
+
+
 
 ### 우리는 이에대해 매우 신중하게 생각해야한다.
 우리의 application에서의 특정 element를 구성하거나, 파괴하는 일인만큼 그 결과에대해서 ~~당연한 말이지만~~ 신중하게 생각해야한다.
@@ -132,6 +178,7 @@ export class HeavyLoaderComponent implements OnDestroy, OnInit {
   private tick() { setTimeout(() => { }, 0); }
 }
 ``` 
+<br/>
 두 instances는 toggle에 의해 동작하게 되는데 각 instances는 다음과 같은 특징이 있다.
 - 첫 번째 instance : CSS Style에 의해 Visibility가 설정되는 방식
 - 두 번째 instance : `ngIf`를 활용하여 DOM에서 빼버리는 방식.
@@ -145,6 +192,11 @@ export class HeavyLoaderComponent implements OnDestroy, OnInit {
 두 Component 모두 처음 application을 시작했을 때 DOM에 존재한다. 위 사진의 첫 번째의 경우 부터 살펴보자. 첫 번째 버튼을 토글 했을 때 visibility는 반복적으로, 그리고 빠르게 변경된다. 여기서 Component는 DOM을 벗어나지 않는다. 항상 DOM에 남아있다. 
 
 그다음, `ngIf` 를 활용하는 두 번째 경우를 살펴보자. 여기서 우리는 매번 새로운 instance를 생성하게되며, 그에따라 log가 첫 번째 경우와는 다르게 나타나고있음을 확인할 수 있다. 더하여, 이미지를 자세히보면 첫 번째의 경우보다 이 `ngIf`를 활용하여 heavy하게 처리하고있는 사례에서 약간 버벅이고 있음을 알 수 있다. 
+
+
+<br><br><br>
+
+
 
 ### 상황에 따라 선택하면된다.
 만약 정말 빠르고 가볍고, 눈깜짝할 사이에 변경되는 기능을 원한다면 CSS로 Visibility를 컨트롤하는 방법을 사용하는 것이 좋을 수 있다. 그러나 한 가지 더 생각해봐야할 것이 있다.
