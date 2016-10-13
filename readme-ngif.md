@@ -1,6 +1,14 @@
-# NgIf Case Study
+# Structural Directives
 ---
+이 문서는 Angular의 [Advanced, Structural Directives](https://angular.io/docs/ts/latest/guide/structural-directives.html#!#ngIf)에 대한 내용을 정리한 문서이다.
 
+
+
+  
+
+
+## NgIf Case Study
+---
 `NgIf`에 집중해보자. 이것은 structural directive의 훌륭한 예시이기도하다. 이것은 boolean값을 취하며, DOM에서의 덩어리 전체를 드러내기도하고, 감추기도 한다.
 
 ```html
@@ -19,12 +27,16 @@
 ![ngIf는 숨기는 것이 아니다.](https://angular.io/resources/images/devguide/structural-directives/element-not-in-dom.png)
 
 
----
+  
+
+
 
 ### 왜 "숨기는" 대신 "지우는" 것일까?
+---
 __angular__팀에서는, 특정 단락을 그것의 `display` property를 `none`으로 설정하는 방법으로  "숨기는(hide)"것을 원하지 않는다라고 말했다.
 
 우리가 숨겨놓는다해도 우리 눈에만 보이지 않을 뿐, 해당 요소는 여전히 보이지않은채로 DOM에 남아있다. 여기에 한가지 더 말해두자면, 정확히는 우리는 여기서 `remove`하지 않고 `ngIf`한다.
+
 
 ### 차이는 매우 중요하게 작용한다.
 우리가 요소하나를 숨길 때에도, Components는 계속해서 동작하고 있다. 이것은 여전히 남아 이것과 DOM요소에 연결된 그 상태를 유지한다. 또한, 이런 상태로 존재하면 event를 계속 수신하고있는 것이다.  
