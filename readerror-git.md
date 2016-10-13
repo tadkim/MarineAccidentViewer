@@ -29,7 +29,7 @@ fatal: unable to access 'https://github.com/tadkim/MarineAccidentVie
 
 ```
 bash-3.2$ git config --global user.name "tadkim"                
-bash-3.2$ git config --global user.email kor.tgkim@gmail.com
+bash-3.2$ git config --global user.email icanhear@dgu.edu
 ```
 
 방금 수정한 내용을 포함하여 현재 내가 사용하고 있는 환경에서의 git의  모든 configuration 설정 내용을 출력 해본다.
@@ -76,3 +76,9 @@ remote: Permission to tadkim/MarineAccidentViewer.git denied to stuckyi.
 fatal: unable to access 'https://github.com/tadkim/MarineAccidentViewer.git/': The requested URL r
 eturned error: 403 
 ```
+
+
+## 이어서 살펴볼 계획인 것
+- [visualstudio에서 설명하는 git ssh-key관련내용](https://www.visualstudio.com/en-us/docs/git/use-ssh-keys-to-authenticate#rememberpassphrase)
+
+- [permission error에 대한 github page](https://help.github.com/articles/error-permission-to-user-repo-denied-to-user-other-repo/)
