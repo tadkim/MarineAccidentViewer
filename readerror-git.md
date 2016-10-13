@@ -19,6 +19,7 @@ fatal: unable to access 'https://github.com/tadkim/MarineAccidentVie
 ## 해결방법 찾기
 1. git config에서 사용자 수정
 일단 내생각에 두 가지 계정을 사용하면서 sshkey인가를 변경했던 것 같다. 아마 이게 별도의 로그인없이 사용자 컴퓨터에서 몇가지 인증절차를 거치면 자동으로 다음부터는 그 git에서 '이 사용자가 그 사용자'임을 기억해서 로그인없이 `commit`, `push`를 날릴 수 있는 권한을 주었던 것이다.
+- [참고 사이트 git-scm.com](https://git-scm.com/book/ko/v1/%EC%8B%9C%EC%9E%91%ED%95%98%EA%B8%B0-Git-%EC%B5%9C%EC%B4%88-%EC%84%A4%EC%A0%95)
 
 > 덧붙여 말하자면, 처음에는 웹브라우저상에서 '자동로그인'되어있는 계정이 `push`하고자 하는 계정이 아닐경우 `permission denied` 에러가 발생하는 줄 알았다. 하지만, 원하는 계정으로 로그인 후 다시 해도 안되는건 마찬가지였다. 결국 근본적인 문제를 찾아야하는 듯!
 
@@ -67,4 +68,11 @@ git configuration의 모든 부분이 아닌 일부분도 따로 출력해서 �
 ```
 bash-3.2$ git config user.name
 //tadkim
+```
+여기까지 마치고 위에서와 동일하게 `add`, `commit`, `push`까지의 코드를 작성해봤다. 결과는 다음과 같다.
+```
+bash-3.2$ git push marine -u master                                                               
+remote: Permission to tadkim/MarineAccidentViewer.git denied to stuckyi.                          
+fatal: unable to access 'https://github.com/tadkim/MarineAccidentViewer.git/': The requested URL r
+eturned error: 403 
 ```
