@@ -29,10 +29,48 @@ __기본적으로 이 챕터에는 다음과 같은 내용들이 포함되어있
   
 <br><br><br>
 
-## NgIf Case Study
+## NgIf
 ---
 `NgIf`에 집중해보자. 이것은 structural directive의 훌륭한 예시이기도하다. 이것은 boolean값을 취하며, DOM에서의 덩어리 전체를 드러내기도하고, 감추기도 한다.
 
+이 문서에서는 `ngIf`에 대해 다음과 같이 나누어 정리하고있다.
+- NgIf api : angular에서 제공하는 기본적인 doc의 내용을 바탕으로 기능 요약, 간단 예제, syntax 등을 길지 않게 정리한다.
+- NgIf Case study : 원래 __Structural Directives__ document에서 다루는 내용이다. 'NgIf Api'보다는 조금 더 길고, 세부적인 내용까지 포함한다.
+
+
+
+### NgIf Api
+---
+- [ngIf api](https://angular.io/docs/ts/latest/api/common/index/NgIf-directive.html)
+- Class Description : `{expression}`을 바탕으로 DOM Tree의 전체 또는 일부를 삭제하거나 재생성한다.
+  
+__example__
+다음 코드는 `ngIf`를 활용하여 발생하는 error의 수를 세고, 0보다 크면(발생하면) 몇개의 error 가 발생했는지를 표시하도록 하는 작업을 구성하는 코드이다.
+
+ `false`로 평가되는 요소는 DOM 으로부터 제거하고, 그렇지 않은경우(`true`) 요소를 복제(clone)한 요소를 DOM에 다시삽입(reinsert)한다.
+
+```html
+<div *ngIf="errorCount > 0" class="error">
+  <!-- Error message displayed when the errorCount property on the current context is greater
+than 0. -->
+  {{errorCount}} errors detected
+</div>
+```
+
+`ngIf`는 하나지만, 작성하는 방법은 다양하다.
+__ngIf Syntax__
+```html
+<div *ngIf="condition">...</div>
+<div template="ngIf condition">...</div>
+<template [ngIf]="condition"><div>...</div></template>
+```
+
+예제폴더 구성이 어렵다면 Live Example 링크를 통해 동작방법을 살펴보자
+- [NgIf Live Sample](http://plnkr.co/edit/fe0kgemFBtmQOY31b4tw?p=preview)
+
+
+### NgIf Case Study
+---
 ```html
 <p *ngIf="condition">
     condition이 ture이면, ngIf도 ture.
@@ -205,3 +243,339 @@ export class HeavyLoaderComponent implements OnDestroy, OnInit {
 
 
 > 이와중에 이 부분을 `ng_play` code에 적용해보려고 했는데, 생각보다 잘 안된다. (16.10.14)
+
+
+---
+
+
+<br><br><br>
+
+## ngIf 실제로 적용해보기
+
+1. ng_play 디렉토리에 `test`라는 탭을 생성한다.
+2. `test`디렉토리에 `ngIf`를 활용한 기본 적인 예제 코드를 작성후 확인한다.
+
+실제로 만들고자 하는 것은 다음과 같다.
+![NgIf 활용하기](http://gph.is/2eyEstZ)
+
+__ngIf 실습코드(기본)__
+
+```typescript
+//...
+@Component({
+    selector:'test',
+    template:`
+        <p> 현재 상태 : {{show}} </p>
+        <button (click)="clicked()"></button>
+        <div>
+            <div *ngIf=show>
+                <h2>이 글씨가 나오면 True 라는 이야기지</h2>
+            </div>
+        </div>
+    `
+})
+export class TestComponent {
+    show: boolean = false;
+    clicked(){
+        this.show = !this.show;
+    }
+}
+```
+
+
+---
+<br/>
+<br/>
+<br/>
+
+## Discover the `<template>` element
+---
+
+`ngIf`와 마찬가지로 `Structure directives`는 [HTML5 template tag](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/template)를 사용하여 마법을 부린다.
+
+Angular App 외부에서 `<template>`태그의 기본 CSS 표시 속성은 `none`이다. 이것의 내용은 보이지 않는다.
+
+App안에서, Angular는 `<template>`태그와 그 하위 children 요소를 제거한다. contents 는 사라진 것 처럼 보이지만 사라지지않았다.
+
+이러한 효과를 다음 코드와 함께 살펴보면 이해가 쉽다. 앞서 말한 효과로 인해 다음 코드 중 중간에 있는 `hip!`이라는 단락이 `template`로 감싸져(wrapping)있는 것을 볼 수 있다.
+
+```html
+<p>
+  Hip!
+</p>
+<template>
+  <p>
+    Hip!
+  </p>
+</template>
+<p>
+  Hooray!
+</p>
+```
+-
+```
+The display is a 'Hip! Hooray!', short of perfect enthusiasm. The DOM effects are different when Angular is in control.
+
+~~위 코드가 Angular App 외부(Outside of Angular)에 있을때, "Hip! Hooray!"라는 문장이 표시될 것이다. 그리고 Angular app 안에서 컨트롤 될 때, 다른 영향을 받게된다.~~
+```
+
+다음 이미지에서 차이점을 확인할 수 있다.
+![Outside of Angular and Inside of Angular](https://angular.io/resources/images/devguide/structural-directives/template-in-out-of-a2.png)
+
+오른쪽(Inside of Angular)에서도 보이지만, Angular는 `<template>`태그와 그 안의 콘텐츠를 비어있는 `<script>`태그로 교체(replace)한다.
+
+__이건 단지 기본 동작일 뿐이다.__
+이것은 말 그대로 단지 기본 동작을 설명하기 위해 든 예시일 뿐이다. 또한, `ngSwitch`를 활용하여 `<template>` 에 다양한 적용하는것과는 다른 부분이 있다.
+
+```html
+<div [ngSwitch]="status">
+    <template [ngSwitch]="'in-mission'">In Mission</template>
+    <template [ngSwitch]="'ready'">Ready</template>
+    <template ngSwitchDefault>Unknown</template>
+</div>
+``` 
+
+위 코드에있는 여러 `ngSwitch` 구문 중에서 어느 condition 하나라도 `true`이면, Angular는 template의 contents를 DOM에 삽입(insert)한다.
+
+<br/><br/><br/>
+
+### What does this have to do with "ngIf" and "ngFor"?
+---
+`ngSwitch`도 꽤 쓸만하고, 이미 저것만으로도 꽤 많은 것들을 할 수 있겠다는 생각을 할 것이다. 이제부터는 우리가 __"왜, 그리고 언제 `ngIf`, 그리고 `ngFor`를 사용해야 하는지"__에 대해 생각해볼 필요가 있다.
+
+__우리는 `<template>`태그와 directive들을 사용하지 않았다.__
+
+
+
+<br/><br/><br/>
+
+## The asterisk (*) effect
+---
+
+`asterisk`는 "별표"라는 뜻이다. 여기에 초점을 맞춰서 생각해보자.
+
+다음 코드를 살펴보자. `NgSwitch`와 다른 차이점이 보이는가?
+
+```html
+<div *ngIf="hero">{{hero}}</div>
+<div *ngFor="let hero of hereos">{{hero}}</div>
+```
+
+`ngIf`와 `ngFor`에는 asterisk, 즉 별표가 접두사로 붙는다.
+
+__The asterisk is "syntactic sugar".__
+`ngIf`, `ngFor`코드를 작성할 때 `*`를 사용함으로써, 쓰는사람이나 읽는 사람 모두 편리해진다.
+
+```
+Under the hood, Angular replaces the asterisk version with a more verbose `<template>` form.
+```
+
+
+### ngIf를 작성하는 방법들
+다음 코드를 살펴보자. `ngIf`를 작성하는 두 가지 방법이 나와있다. 결과는 동일하나 양쪽 어느형태든 우리는 사용할 수 있다.
+
+
+```html
+<!-- Examples (A) and (B) are the same -->
+<!-- (A) *ngIf paragraph -->
+<p *ngIf="condition">
+  Our heroes are true!
+</p>
+
+<!-- (B) [ngIf] with template -->
+<template [ngIf]="condition">
+  <p>
+    Our heroes are true!
+  </p>
+</template>
+```
+> Angular에서 대부분은 위 코드에서 (A) 형태로 코드를 작성한다고 한다.
+
+```
+It's worth knowing that Angular expands style (A) into style (B). It moves the paragraph and its contents inside a <template> tag. It moves the directive up to the <template> tag where it becomes a property binding, surrounded in square brackets. The boolean value of the host component's condition property determines whether the templated content is displayed or not.
+
+정확히 말하면 style (A) 에서 style(B)로 확장가능하기때문에 더 가치가 있다고 보는 것이다. 즉, 위 코드의 `<p>`태그 부분을 `<template>`태그 안에두고 host Component인 `<template>`부분의 `condition` property에 따라 보여질지 안보여질지를 결정하게 둘 수 있다.
+```
+
+__Angular transforms `*ngFor` in a similar manner__
+Angular는 방금 살펴봤던 `ngIf`와 비슷한 방법으로 `ngFor`에도 이러한 변환을 적용해두었다.
+
+
+```html
+<!-- Examples (A) and (B) are the same -->
+
+<!-- (A) *ngFor div -->
+<div *ngFor="let hero of heroes">{{ hero }}</div>
+
+<!-- (B) ngFor with template -->
+<template ngFor let-hero [ngForOf]="heroes">
+  <div>{{ hero }}</div>
+</template>
+```
+
+기본 패턴은 동일하다.
+1. `<template>` 생성
+2. content를 재배치
+3. directive를 `<template>`안으로 이동한다.
+
+
+```
+There are extra nuances stemming from Angular's ngFor micro-syntax which expands into an additional ngForOf property binding (the iterable) and the hero template input variable (the current item in each iteration).
+
+
+```
+
+<br/><br/><br/>
+
+## Make a structural directive
+---
+여기까지의 내용을 바탕으로 우리의 application에 적용할 structural directive 를 만들어보자.
+
+Let's write our own `structural directive`, an Unless directive, the not-so-evil twin of ngIf.
+
+
+`ngIf`가 condition이 `true`일 때 표시하는 것과는 달리, 우리의 directive는 condition이 `false`일 때 콘텐츠를 표시한다.
+
+
+__directive를 만드는 것은 Component를 생성하는 것과 비슷하다.__
+
+- Directives의 Decorator를 가져와 `import` 해준다.
+- directive를 식별할 __CSS attribute selector(in brackets)__를 추가한다.
+- 바인딩을 위해 input property에 식별가능한 이름을 부여해준다.(일반적으로 directive 자체의 이름)
+- decorator를 우리의 implements class에 적용한다.
+
+> implements : 구현하다.
+
+다음과 같이 시작할 수 있다.
+
+```typescript
+import { Directive, Input } from '@angular/core';
+
+@Directive({ selector: '[myUnless]' })
+export class UnlessDirective {
+}
+```
+> __Selector brackets [ ]__
+The CSS syntax for selecting an attribute is a name in square brackets. We surround our directive name in square brackets. See Directive configuration on the [cheatsheet](https://angular.io/docs/ts/latest/guide/cheatsheet.html).
+
+특정 속성(attribute)을 선택하는 CSS Syntax는 대괄호`[]`안에 해당 속성의 이름을 넣는 형태로 작성된다. 이는 기존 CSS Syntax에도 존재하는 것이다.
+
+- [w3schools, css selector attribute](http://www.w3schools.com/cssref/tryit.asp?filename=trycss_sel_attribute)
+
+> __Selector name prefixes__
+selector 이름을 정할 때, 접두사를 따서 정하는 것을 권장한다. 또한 selector 이름이 지금 현재는 물론, 미래에도 표준 HTML attribute 이름과 충돌하지 않아야한다는 점을 주지해야한다.
+
+
+
+__Our prefix is `my`.__
+우리는 Angular 에서 이미 사용하고, 포함되어있는 `ng`라는 접두사를 쓰지 않기로 한다. 이미 어떠한 의미를 가지고 사용되고있는 접두사를 새로운 범위에서 사용할 경우 혼란을 가져올 수 있기 때문이다. 따라서 여기서는 `my`라는 접두사를 사용하기로 한다.
+
+
+<br/><br/>
+
+__TemplateRef 와  ViewContainerRef__
+앞으로 template에 접근하거나, 이것에 대한 콘텐츠 렌더링이 필요할 수 있다. 우리는 `TemplateRef`로 template에 접근할 수 있다. renderer는 `ViewContainerRef`로 한다.
+
+둘다 우리의 __constructor__에 `private variable` 형태로 주입(Inject)하자. 
+
+_constructor에 `TemplateRef`와 `ViewContainerRef` Inject 하는 코드_
+
+```typescript
+constructor(
+    private templateRef: TemplateRef<any>,
+    private viewContainerRef: ViewContainerRef
+) { }
+```
+
+- 우리 directive의 `Consumer`는 `boolean` value를 우리 directive의 `Unless` input property에 바인딩 할 것이다.
+    - directive는 이 값을 기준으로 template를 추가하거나 제거한다.
+
+<br/><br/>
+
+__이제 stter-only property인 `myUnless`property를 추가해보자.__
+
+```typescript
+@Input() set myUnless(condition: boolean){
+    if(!condition){
+        this.viewContainer.createEmbeddedView(this.templateRef);
+    } else {
+        this.viewContainer.clear();
+    }
+}
+```
+
+> 여기서 `@Input()`은  이 속성은 directive를 위한 input property임을 알려주는 annotation이다.
+
+우선 여기까지는 신기할게 전혀 없다. 만약 condition이 `false`면 우리는 template를 렌더링하고, 다른 경우라면 element content를 `clear()`시킨다.
+
+최종 결과는 다음과 같아야 한다.
+
+~~`unless.directive.ts`~~
+
+```typescript
+import { Directive, Input } from '@angular/core';
+import { TemplateRef, ViewContainerRef } from '@angular/core';
+@Directive({ selector: '[myUnless]' })
+export class UnlessDirective {
+  constructor(
+    private templateRef: TemplateRef<any>,
+    private viewContainer: ViewContainerRef
+    ) { }
+  @Input() set myUnless(condition: boolean) {
+    if (!condition) {
+      this.viewContainer.createEmbeddedView(this.templateRef);
+    } else {
+      this.viewContainer.clear();
+    }
+  }
+}
+```
+
+이제 이것을 __AppModule__의 `declarations` array에 추가한다. 일단 처음에는 임시로 template에서 쓸 test HTML 코드를 작성해둔다.
+
+```html
+<p *myUnless="condition">
+    condition is false and myUnless is ture.
+</p>
+<p *myUnless="!condition">
+    condition is true and myUnless is false.
+</p>
+```
+
+작성 후 이것을 실행하여 여러 동작들을 체크해가며 확인해보도록 하자.
+- 이것은  (우리가 하고자 했던대로) `ngIf`와 반대로 작동하고있다.
+
+
+condition 값이 `true`이면 상단의 단락을 제거한다(정확히는 `<script>` 태그로 replace하는 것이다)그리고 아래부분에서 단락이 나타도록 한다. 여기까지 내용은 아래의 이미지와 같다.
+
+![ng2 make a structural directive](https://angular.io/resources/images/devguide/structural-directives/myUnless-is-true.png)
+
+이미지를 통해 확인해보면 우리의 `Unless` directive는 확실히 간단하게 죽는(dead)다. 
+
+__ngIf는 분명 더 복잡할 것이다?__
+이런 궁금증이 (만약에라도 생긴다면) 이제까지 작성한 소스코드만 보더라도 아니라는 생각이 들것이다. 소스코드는 꽤 잘 문서화 되어있기때문에 우리가 이중에서 뭔가가 작동하는 방법을 알고 싶을 때는 소스에대한 자문을 구하는 것에 부끄럼없이 접근할 수 있다.
+
+
+__`ngIf`는 크게 다르지 않다.__
+크게다르지 않다. 단지 성능 향상 및 개선을 위해 몇가지 체크 사항만 추가되었을 뿐이다. (미처 제거되지 않거나 필요하지 않은 view를 체크) 그 외의 부분들은 거의 동일하다.
+
+
+
+<br/><br/><br/>
+
+## Wrap up
+---
+다음은 이 장에서 다뤘던 소스이다.
+
+~~ 소스영역 ~~
+
+이번 장에서 HTML layout을 `ngFor`나 `ngIf`와 같은 __structural directive__를 활용하여 다루는 것에 대해서 정리해봤다. 그리고 더하여 직접 `myUnless`라는 이름의 __structural directive__를 작성하기도 했다. 
+
+Angular는 이렇게 layout을 지혜롭게 다루는 여러 기술을 제공하고 있다. 특히 structural directive와 같이 외부 콘텐츠를 가지고 자신의 template안에서 해당 콘텐츠를 통합해서 사용할 수 있는 component 등을 제공하고 있다. 
+- tab과 tab pane을 컨트롤하는 기능이 좋은 예라고 할 수 있다.?
+
+
+<br/><br/><br/>
+
+
+## (다음 장에서는) __Structural Component__ 에 대해서 살펴볼 계획이다.
